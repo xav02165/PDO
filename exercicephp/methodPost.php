@@ -105,8 +105,6 @@ $resultsType = $stmtType->fetchAll(PDO::FETCH_ASSOC);
         <input type="submit" name="submitVehicule" value="envoyer le vehicule dans la bdd">
 
         
-</form>
-   
 
 
 </body>
