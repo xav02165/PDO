@@ -104,9 +104,29 @@ $resultsType = $stmtType->fetchAll(PDO::FETCH_ASSOC);
 
         <input type="submit" name="submitVehicule" value="envoyer le vehicule dans la bdd">
 
-        
+//supprimer une ligne de bdd avec un bouton submit et hidden
+     <hr>
+     <?php
+foreach ($resultsall as $value) {
+    $idASupprimer = $value['id_vehicule'];
+    echo "<form method='POST'>";
+    echo "<input type='hidden' name='idDelete' value='$idASupprimer'>";
 
+foreach ($value as $key =>$value2){
+        echo $key ." : " . $value2 . " - ";
+    }
+    echo '<input type"submit" name="submitDelete" value="Supprimer"><br>';
+    echo "</form>;"
+}
 
+if (isset($_POST['submitDelete'])){
+    $idToDelete = $_POST['idDelete'];
+    $sqlDelete = "DELETE FROM `vehicule` WHERE id_vehicule = '$idToDelete'";
+    $stmtDelete = $pdo->prepare($sqlDelete);
+    $stmtDelete->execute();
+}
+
+?>
 </body>
 
 </html>
