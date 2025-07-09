@@ -19,94 +19,90 @@
         <input type="submit" name="submitType" value="envoyer le type dans la bdd">
     </form>
 
-<?php
+    <?php
 
-$host = 'localhost';
-$dbname = 'car';
-$user = 'root';
-$password = '';
+    $host = 'localhost';
+    $dbname = 'car';
+    $user = 'root';
+    $password = '';
 
 
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     echo "Connexion réussie !";
- 
-if (isset($_POST['submitVehicule'])){
-    $Color = $_POST['selectAddCouleur'];
-    $Immatriculation= $_POST['immatriculation']; 
-    $Type = $_POST['selectAddType'];
+
+    if (isset($_POST['submitVehicule'])) {
+        $Color = $_POST['selectAddCouleur'];
+        $Immatriculation = $_POST['immatriculation'];
+        $Type = $_POST['selectAddType'];
 
 
-    $sql = "INSERT INTO `vehicule` (`immatriculation`, `id_type`, `id_couleur`) VALUES ('$Immatriculation', '$Color', '$Type')";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-
-    
-}
+        $sql = "INSERT INTO `vehicule` (`immatriculation`, `id_type`, `id_couleur`) VALUES ('$Immatriculation', '$Color', '$Type')";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+    }
 
 
-if (isset($_POST['submitcolor'])) {
-    $Color = $_POST['colorName'];
-    $sql = "INSERT INTO `couleurs`(`nom_couleur`) VALUES ('$Color')";
-    
-    $req = $pdo->prepare($sql);
-    $req->execute();
-    
-}
+    if (isset($_POST['submitcolor'])) {
+        $Color = $_POST['colorName'];
+        $sql = "INSERT INTO `couleurs`(`nom_couleur`) VALUES ('$Color')";
 
-if (isset($_POST['submitType'])) {
-    $Type = $_POST['typeName'];
-    $sql = "INSERT INTO `type_vehicule`(`nom_type`) VALUES ('$Type')";
-    
-    $req = $pdo->prepare($sql);
-    $req->execute();
-    
-}
+        $req = $pdo->prepare($sql);
+        $req->execute();
+    }
 
-?>
+    if (isset($_POST['submitType'])) {
+        $Type = $_POST['typeName'];
+        $sql = "INSERT INTO `type_vehicule`(`nom_type`) VALUES ('$Type')";
+
+        $req = $pdo->prepare($sql);
+        $req->execute();
+    }
+
+    ?>
     <?php
-//pour delete:
-$sqlAll = "SELECT * FROM `vehicule`";
-$stmtAll = $pdo->prepare($sqlAll);
-$stmtAll->execute();
+    //pour delete:
+    $sqlAll = "SELECT * FROM `vehicule`";
+    $stmtAll = $pdo->prepare($sqlAll);
+    $stmtAll->execute();
 
-$resultsAll = $stmtAll->fetchALL(PDO::FETCH_ASSOC);
-//fin php for delete
-
-
-
-    
-$sqlCouleur = "SELECT * FROM `couleurs`";
-$stmtCouleur = $pdo->prepare($sqlCouleur);
-$stmtCouleur->execute();
-
-$resultsCouleur = $stmtCouleur->fetchALL(PDO::FETCH_ASSOC);
-
-$sqlType = "SELECT * FROM `type_vehicule`";
-$stmtType = $pdo->prepare($sqlType);
-$stmtType->execute();
-
-$resultsType = $stmtType->fetchAll(PDO::FETCH_ASSOC);
-
-?>
+    $resultsAll = $stmtAll->fetchALL(PDO::FETCH_ASSOC);
+    //fin php for delete
 
 
 
-<form method="POST">
+
+    $sqlCouleur = "SELECT * FROM `couleurs`";
+    $stmtCouleur = $pdo->prepare($sqlCouleur);
+    $stmtCouleur->execute();
+
+    $resultsCouleur = $stmtCouleur->fetchALL(PDO::FETCH_ASSOC);
+
+    $sqlType = "SELECT * FROM `type_vehicule`";
+    $stmtType = $pdo->prepare($sqlType);
+    $stmtType->execute();
+
+    $resultsType = $stmtType->fetchAll(PDO::FETCH_ASSOC);
+
+    ?>
+
+
+
+    <form method="POST">
         <label>Ajouter un vehicule</label>
         <input type="text" name="immatriculation">
         <select name="selectAddCouleur">
             <?php
-            foreach ($resultsCouleur as $key => $value){
+            foreach ($resultsCouleur as $key => $value) {
                 echo "<option value='" . $value['id_couleur'] . "'>" . $value['nom_couleur'] . " </option>";
             }
             ?>
         </select>
-        
+
 
         <select name="selectAddType">
             <?php
-            foreach ($resultsType as $key => $value){
+            foreach ($resultsType as $key => $value) {
                 echo "<option value='" . $value['id_type'] . "'>" . $value['nom_type'] . " </option>";
             }
             ?>
@@ -114,35 +110,33 @@ $resultsType = $stmtType->fetchAll(PDO::FETCH_ASSOC);
 
         <input type="submit" name="submitVehicule" value="envoyer le vehicule dans la bdd">
 
-//supprimer une ligne de bdd avec un bouton submit et hidden
-     <hr>
-     <form method="POST">
-     <?php
+        <!-- supprimer une ligne de bdd avec un bouton submit et hidden -->
+        <hr>
 
-foreach ($resultsAll as $key =>$value) {
-    $idASupprimer = $value['id_vehicule'];
+        <?php
 
-        echo "<form method='POST'>";
-        echo "<input type='hidden' name='idDelete' value='$idASupprimer'>";
+        foreach ($resultsAll as $key => $value) {
+            $idASupprimer = $value['id_vehicule'];
+
+            echo "<form method='POST'>";
+            echo "<input type='hidden' name='idDelete' value='$idASupprimer'>";
 
 
-        foreach ($value as $key =>$value2) {
-        echo $key . " : " . $value2 . " - ";
+            foreach ($value as $key => $value2) {
+                echo $key . " : " . $value2 . " - ";
+            }
+            echo '<input type="submit" name="submitDelete" value="Supprimer"><br>';
+            echo "</form>";
         }
-        echo '<input type="submit" name="submitDelete" value="Supprimer"><br>';
-        echo "</form>";
+        if (isset($_POST['submitDelete'])) {
+            $idToDelete = $_POST['idDelete'];
+            $sqlDelete = "DELETE FROM `vehicule` WHERE id_vehicule = '$idToDelete'";
+            $stmtDelete = $pdo->prepare($sqlDelete);
+            $stmtDelete->execute();
+        }
 
-}
-if (isset($_POST['submitDelete'])){
-    $idToDelete = $_POST['idDelete'];
-    $sqlDelete = "DELETE FROM `vehicule` WHERE id_vehicule = '$idToDelete'";
-    $stmtDelete = $pdo->prepare($sqlDelete);
-    $stmtDelete->execute();
-}
+        ?>
 
-?>
-     </form>
 </body>
 
 </html>
-
