@@ -65,6 +65,16 @@ if (isset($_POST['submitType'])) {
 
 ?>
     <?php
+//pour delete:
+$sqlAll = "SELECT * FROM `vehicule`";
+$stmtAll = $pdo->prepare($sqlAll);
+$stmtAll->execute();
+
+$resultsAll = $stmtAll->fetchALL(PDO::FETCH_ASSOC);
+//fin php for delete
+
+
+
     
 $sqlCouleur = "SELECT * FROM `couleurs`";
 $stmtCouleur = $pdo->prepare($sqlCouleur);
@@ -106,19 +116,23 @@ $resultsType = $stmtType->fetchAll(PDO::FETCH_ASSOC);
 
 //supprimer une ligne de bdd avec un bouton submit et hidden
      <hr>
+     <form method="POST">
      <?php
-foreach ($resultsall as $value) {
+
+foreach ($resultsAll as $key =>$value) {
     $idASupprimer = $value['id_vehicule'];
-    echo "<form method='POST'>";
-    echo "<input type='hidden' name='idDelete' value='$idASupprimer'>";
 
-foreach ($value as $key =>$value2){
-        echo $key ." : " . $value2 . " - ";
-    }
-    echo '<input type"submit" name="submitDelete" value="Supprimer"><br>';
-    echo "</form>;"
+        echo "<form method='POST'>";
+        echo "<input type='hidden' name='idDelete' value='$idASupprimer'>";
+
+
+        foreach ($value as $key =>$value2) {
+        echo $key . " : " . $value2 . " - ";
+        }
+        echo '<input type="submit" name="submitDelete" value="Supprimer"><br>';
+        echo "</form>";
+
 }
-
 if (isset($_POST['submitDelete'])){
     $idToDelete = $_POST['idDelete'];
     $sqlDelete = "DELETE FROM `vehicule` WHERE id_vehicule = '$idToDelete'";
@@ -127,6 +141,7 @@ if (isset($_POST['submitDelete'])){
 }
 
 ?>
+     </form>
 </body>
 
 </html>
