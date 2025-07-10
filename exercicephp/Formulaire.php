@@ -11,7 +11,9 @@
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         
 
+
 ?>
+
 
 
 <!DOCTYPE html>
@@ -62,7 +64,7 @@
 
         echo "Bonjour, " .  $_SESSION['users']['nom_user'] . " " . $_SESSION['users']['prenom_user'] . ". Vous etes connecté.";
         
-        
+        include 'test.php';
     }
     
     ?>
@@ -160,58 +162,9 @@
 
 
     ?>
+<hr>
 
-<?php
 
-//Update
-if (isset($_GET["id"])){
-    $id = $_GET['id'];
-    $sqlID = "SELECT * FROM `users` WHERE id_user = '$id'";
-
-    //preparation + execution de la requete:
-    $stmtID = $pdo->prepare($sqlID);
-    $stmtID->execute();
-
-    $resultsID = $stmtID->fetchALL(PDO::FETCH_ASSOC);
-
-    echo '<form method="POST">
-    <label for="">ID</label>
-    <input type="text" name="idUpdate" value="' . $resultsID[0]['id_user'] . '">
-    <br>
-    <label for="">Nom</label>
-    <input type="text" name="nomUpdate" value="' . $resultsID[0]["nom_user"] . '">
-    <br>
-    <label for="">Prenom</label>
-    <input type="text" name="prenomUpdate"value="' . $resultsID[0]["prenom_user"] . '" >
-    <br>
-    <label for="">age</label>
-    <input type="text" name="ageUpdate" value="' . $resultsID[0]["age_user"] . '">
-    <br>
-    <label for="">Mail</label>
-    <input type="text" name="mailUpdate" value="' . $resultsID[0]["adresse_mail_user"] . '">
-    <br>
-    <label for="">Password</label>
-    <input type="text" name="passwordUpdate" value="' . $resultsID[0]["password_user"] . '">
-    
-    <input type="submit" name="submitUpdate" value="Mettre a jour la BDD">
-</form>';
-
-}
-
-if (isset($_POST['submitUpdate'])){
-
-    $idUpdate = $_POST['idUpdate'];
-    $nom = $_POST['nomUpdate'];
-    $Prenom = $_POST['prenomUpdate'];
-    $Age = $_POST['ageUpdate'];
-    $Mail = $_POST['mailUpdate'];
-    $Password = $_Post['passwordUpdate'];
-
-    $sqlUpdate = "UPDATE `users` SET  `nom_user`='$nom', `prenom_user`='$Prenom', `age_user`='$Age', `adresse_mail_user`='$Mail', `password_user`='$Password' WHERE id_user='$idUpdate'";
-    $stmtUpdate = $pdo->prepare($sqlUpdate);
-    $stmtUpdate ->execute();
-}
-?>
 
 
 </body>
