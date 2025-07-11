@@ -1,4 +1,7 @@
+
+
 <?php
+//connexion a la bdd, hashage, listing bdd
         //connexion a la bdd
         session_start();
         $host = 'localhost';
