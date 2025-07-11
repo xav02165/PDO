@@ -9,7 +9,7 @@
 
         $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $password);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
+        echo "Connexion réussie !";
 
 
 ?>
@@ -25,7 +25,7 @@
 </head>
 
 <body>
-    
+   
     <?php
 
     if (!isset($_SESSION['users'])){
@@ -35,35 +35,19 @@
         <label>Password</label>
         <input type="password" name="password">
         <input type="submit" name="submitConnexion" value="Se connecter">
-    </form> ';
+        
+        </form><a href="?page=createAccount" ><p>Pas de compte ? créez en un ici! <p></a>';
     }
     else {
         echo'<form method="POST">
         <input type="submit" name="deconnexion" value="Se deconnecter">
         <br>
-        <label>Ajouter un nom dans la Bdd</label>
-        <input type="text" name="nom_user1">
         
-        <br>
-        <label>Ajouter un prenom dans la BDD</label>
-        <input type="text" name="prenom_user1">
-        
-        <br>
-        <label>Ajouter une adresse mail dans la Bdd</label>
-        <input type="text" name="adresse_mail_user1">
-        
-        <br>
-        <label>Ajouter un age dans la BDD</label>
-        <input type="text" name="age_user1">
-        
-        <br>
-        <label>Ajouter un password dans la Bdd</label>
-        <input type="text" name="password_user1">
-        <input type="submit" name="submitNom" value="creer une nouvelle fiche dans la Bdd">
         </form>';
 
-        echo "Bonjour, " .  $_SESSION['users']['nom_user'] . " " . $_SESSION['users']['prenom_user'] . ". Vous etes connecté.";
-        
+        echo "Bonjour, " .  htmlspecialchars($_SESSION['users']['nom_user']) . " " . $_SESSION['users']['prenom_user'] . ". Vous etes connecté.";
+        echo '<br>';
+        echo '<hr>';
         include 'test.php';
     }
     
@@ -82,13 +66,14 @@
             $stmt->execute();
             $results = $stmt->fetchALL(PDO::FETCH_ASSOC);
 
-            if ($password == $results[0]["password_user"]){
+            //password_verify pour le hachage inversé
+            if (password_verify($password, $results[0]["password_user"])){
                 $_SESSION['users'] = [
-                    "id_user" => $results[0]["id_user"],
-                    "nom_user" => $results[0]["nom_user"],
-                    "prenom_user" => $results[0]["prenom_user"],
-                    "age_user" => $results[0]["age_user"],
-                    "adresse_mail_user" =>$results[0]["adresse_mail_user"] ,
+                    "id_user" => htmlspecialchars($results[0]["id_user"]),
+                    "nom_user" => htmlspecialchars($results[0]["nom_user"]),
+                    "prenom_user" => htmlspecialchars($results[0]["prenom_user"]),
+                    "age_user" => htmlspecialchars($results[0]["age_user"]),
+                    "adresse_mail_user" =>htmlspecialchars($results[0]["adresse_mail_user"]) ,
                 ];
                 header("Location: Formulaire.php");
             }
@@ -102,9 +87,34 @@
             header("Location: Formulaire.php");
         }
         
+        //create count
+        if (isset($_GET['page']) && $_GET['page'] == 'createAccount'){
+            echo '<form method="POST">
+            <label> Nom</label>
+        <input type="text" name="nom_user1">
+        
+        <br>
+        <label>Prenom</label>
+        <input type="text" name="prenom_user1">
+        
+        <br>
+        <label>Adresse mail </label>
+        <input type="text" name="adresse_mail_user1">
+        
+        <br>
+        <label>Age</label>
+        <input type="text" name="age_user1">
+        
+        <br>
+        <label>Password</label>
+        <input type="text" name="password_user1">
+        <br>
+        <input type="submit" name="submitNom" value="Creer mon compte">
+        </form>';
+        }
     ?>
 
-    
+    <hr>
 <?php
  if (isset($_POST['submitNom'])) {
         $Nom = $_POST['nom_user1'];
@@ -113,10 +123,13 @@
         $Age = $_POST['age_user1'];
         $Password = $_POST['password_user1'];
 
-        $sql = "INSERT INTO `users` (`nom_user`, `prenom_user`, `adresse_mail_user`, `age_user`, `password_user`) VALUES ('$Nom', '$Prenom', '$Mail','$Age', '$Password')";
+        //fonction de hachage pour le password
+        $hashedPassword =  password_hash($Password, PASSWORD_DEFAULT);
 
-        $req = $pdo->prepare($sql);
-        $req->execute();
+        $sql = "INSERT INTO `users` (`nom_user`, `prenom_user`, `adresse_mail_user`, `age_user`, `password_user`) VALUES ('$Nom', '$Prenom', '$Mail','$Age', '$hashedPassword')";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
     }
 
 
@@ -162,7 +175,7 @@
 
 
     ?>
-<hr>
+
 
 
 
