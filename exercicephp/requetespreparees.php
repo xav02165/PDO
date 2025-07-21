@@ -41,4 +41,7 @@
         $stmt->execute([$name, $firstName, $age, $mail, $password]);
     }
 
+
+    // Pour contrer les failles XSS
+htmlspecialchars($results[0]["id_user"])
 ?>
