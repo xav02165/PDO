@@ -118,7 +118,7 @@
     ?>
 
     <hr>
-<?php
+<?php // fonction de hashage + modification securité (accept les apostrophes)
  if (isset($_POST['submitNom'])) {
         $Nom = $_POST['nom_user1'];
         $Prenom = $_POST['prenom_user1'];
@@ -129,9 +129,18 @@
         //fonction de hachage pour le password
         $hashedPassword =  password_hash($Password, PASSWORD_DEFAULT);
 
-        $sql = "INSERT INTO `users` (`nom_user`, `prenom_user`, `adresse_mail_user`, `age_user`, `password_user`) VALUES ('$Nom', '$Prenom', '$Mail','$Age', '$hashedPassword')";
+        $sql = "INSERT INTO `users` (`nom_user`, `prenom_user`, `age_user`, `adresse_mail_user`, `password_user`) VALUES (:nom,:prenom,:age,:mail,:motDePass)"; //  accept les apostrophes + securité ou VALUES (?,?,?,?,?)";
 
         $stmt = $pdo->prepare($sql);
+
+        $stmt->bindParam(':nom', $Nom);
+        $stmt->bindParam(':prenom', $Prenom);
+        $stmt->bindParam(':age', $Age);
+        $stmt->bindParam(':mail', $Mail);
+        $stmt->bindParam(':motDePass', $hashedPassword);
+        //ou $stmt->execute([$Nom, $Prenom, $Age, $Mail, $hashedPassword]);
+
+
         $stmt->execute();
     }
 
