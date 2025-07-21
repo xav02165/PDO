@@ -125,14 +125,15 @@
 
         $stmt = $pdo->prepare($sql);
 
-        $stmt->bindParam(':nom', $Nom);
-        $stmt->bindParam(':prenom', $Prenom);
-        $stmt->bindParam(':mail', $Mail);
-    
+       
         //ou $stmt->execute([$Nom, $Prenom, $Age, $Mail, $hashedPassword]);
 
 
-        $stmt->execute();
+        $stmt->execute(([
+            ':nom' => $Nom,
+            ':prenom' => $Prenom,
+            ':mail' => $Mail
+        ]       ));
     }
 
 
