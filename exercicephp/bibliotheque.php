@@ -109,5 +109,70 @@
         }
     ?>
 
+
+
+ <hr>
+<?php // fonction de hashage + modification securité (accept les apostrophes)
+ if (isset($_POST['submitNom'])) {
+        $Nom = $_POST['nom_utilisateurs'];
+        $Prenom = $_POST['prenom_utilisateurs'];
+        $Mail = $_POST['email_'];
+
+        //fonction de hachage pour le password
+        $hashedPassword =  password_hash($Nom, PASSWORD_DEFAULT);
+
+        $sql = "INSERT INTO `utilisateurs` (`nom_utilisateurs`, `prenom_utilisateurs`, `email_` VALUES (:nom,:prenom,:mail)"; //  accept les apostrophes + securité ou VALUES (?,?,?,?,?)";
+
+        $stmt = $pdo->prepare($sql);
+
+        $stmt->bindParam(':nom', $Nom);
+        $stmt->bindParam(':prenom', $Prenom);
+        $stmt->bindParam(':mail', $Mail);
+    
+        //ou $stmt->execute([$Nom, $Prenom, $Age, $Mail, $hashedPassword]);
+
+
+        $stmt->execute();
+    }
+
+
+
+
+    
+
+
+    if (isset($_POST['submitPrenom'])) {
+        $Prenom = $_POST['prenom_utilisateurs'];
+        $sql = "INSERT INTO  `utilisateurs` (`prenom_utilisateurs`) VALUES ('$Prenom')";
+
+        $req = $pdo->prepare($sql);
+        $req->execute();
+    }
+
+
+    if (isset($_POST['submitAdresse_mail-user'])) {
+        $Mail = $_POST['email_'];
+        $sql = "INSERT INTO  `utilisateurs` (`email_`) VALUES ('$Mail')";
+
+        $req = $pdo->prepare($sql);
+        $req->execute();
+    }
+
+
+    if (isset($_POST['submitNom'])) {
+        $Nom = $_POST['nom_utilisateurs'];
+        $sql = "INSERT INTO `utilisateurs` (`nom_utilisateurs`) VALUES ('$Nom')";
+
+        $req = $pdo->prepare($sql);
+        $req->execute();
+    }
+
+
+
+
+    ?>
+
+
+
 </body>
 </html>
