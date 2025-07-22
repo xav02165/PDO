@@ -34,6 +34,40 @@
     <br>
     <br>
 
+<?php
+// Insertion d'un auteur dans la base de données
+if (isset($_POST['submitName'])) {
+    // Récupération des données du formulaire avec validation de base
+    $authorName = $_POST['nom'] ?? null;
+    $authorPrenom = $_POST['prenom'] ?? null;
+    $authorNationalite = $_POST['nationalité'] ?? null; 
+    $EcrivainId = $_POST['idecrivain'] ?? null;
+
+    // Vérification que tous les champs requis sont remplis
+    if (!empty($authorName) && !empty($authorPrenom) && !empty($authorNationalite)) {
+        // Préparation de la requête SQL avec des paramètres nommés pour éviter les injections SQL
+        $sql = "INSERT INTO `ecrivains` (`idecrivain`, `nom`, `prenom`, `nationalité`) 
+                VALUES (:idecrivain, :nom, :prenom, :nationalite)";
+        $stmt = $pdo->prepare($sql);
+
+        // Exécution de la requête avec les données sécurisées
+        $stmt->execute([
+            ':idecrivain' => $EcrivainId,
+            ':nom' => $authorName,
+            ':prenom' => $authorPrenom,
+            ':nationalite' => $authorNationalite
+        ]);
+
+        echo "Auteur ajouté avec succès !";
+    } else {
+        echo "Veuillez remplir tous les champs obligatoires.";
+    }
+}
+?>
+
+
+
+
     <label>Ajouter un Genre dans la BDD</label><br>
     <input type="text" name="libelle" placeholder="Nom du genre"><br>
     <input type="submit" name="submitGenre" value="Envoyer le genre dans la BDD">
@@ -66,39 +100,10 @@
     <br>
 </form>
 
+
+
+
 <?php
-// Insertion d'un auteur dans la base de données
-if (isset($_POST['submitName'])) {
-    // Récupération des données du formulaire avec validation de base
-    $authorName = $_POST['nom'] ?? null;
-    $authorPrenom = $_POST['prenom'] ?? null;
-    $authorNationalite = $_POST['nationalité'] ?? null; 
-    $EcrivainId = $_POST['idecrivain'] ?? null;
-
-    // Vérification que tous les champs requis sont remplis
-    if (!empty($authorName) && !empty($authorPrenom) && !empty($authorNationalite)) {
-        // Préparation de la requête SQL avec des paramètres nommés pour éviter les injections SQL
-        $sql = "INSERT INTO `ecrivains` (`idecrivain`, `nom`, `prenom`, `nationalité`) 
-                VALUES (:idecrivain, :nom, :prenom, :nationalite)";
-        $stmt = $pdo->prepare($sql);
-
-        // Exécution de la requête avec les données sécurisées
-        $stmt->execute([
-            ':idecrivain' => $EcrivainId,
-            ':nom' => $authorName,
-            ':prenom' => $authorPrenom,
-            ':nationalite' => $authorNationalite
-        ]);
-
-        echo "Auteur ajouté avec succès !";
-    } else {
-        echo "Veuillez remplir tous les champs obligatoires.";
-    }
-}
-
-
-
-
 // Insertion d'un genre dans la base de données
 if (isset($_POST['submitGenre'])) {
     $genreName = $_POST['libelle'];
@@ -120,6 +125,7 @@ if (isset($_POST['submitGenre'])) {
     <input type="text" name="email_" placeholder="Email de l'utilisateur">
     <select name="idlivres">
         <option value="">Sélectionner un livre</option>
+
         <?php
         $sqlLivres = "SELECT * FROM livres";
         $stmtLivres = $pdo->prepare($sqlLivres);
