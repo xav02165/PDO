@@ -29,7 +29,7 @@
     <label>Ajouter un Auteur dans la BDD</label><br>
     <input type="text" name="nom" placeholder="Nom de l'auteur"><br>
     <input type="text" name="prenom" placeholder="Prenom de l'auteur"><br>
-    <input type="text" name="nationalitée" placeholder="Nationalité de l'auteur"><br>
+    <input type="text" name="nationalité" placeholder="Nationalité de l'auteur"><br>
     <input type="submit" name="submitBook" value="Envoyer le nom de l'auteur dans la BDD">
     <br>
     <br>
@@ -62,29 +62,42 @@
         }
         ?>
     </select>
-    <input type="submit" name="submitBook" value="Envoyer le livre dans la BDD">
+    <input type="submit" name="submit-Book" value="Envoyer le livre dans la BDD">
     <br>
 </form>
 
 <?php
 // Insertion d'un auteur dans la base de données
-
-
 if (isset($_POST['submitName'])) {
-    $authorName = $_POST['nom'];
-    $authorPrenom = $_POST['prenom'];
-    $authorNationalite = $_POST['nationalitée'];
+    // Récupération des données du formulaire avec validation de base
+    $authorName = $_POST['nom'] ?? null;
+    $authorPrenom = $_POST['prenom'] ?? null;
+    $authorNationalite = $_POST['nationalité'] ?? null; 
+    $EcrivainId = $_POST['idecrivain'] ?? null;
 
-    $sql = "INSERT INTO `ecrivains` (`nom`, `prenom`, `nationalité`) VALUES (:nom, :prenom, :nationalité)";
-    $stmt = $pdo->prepare($sql);
+    // Vérification que tous les champs requis sont remplis
+    if (!empty($authorName) && !empty($authorPrenom) && !empty($authorNationalite)) {
+        // Préparation de la requête SQL avec des paramètres nommés pour éviter les injections SQL
+        $sql = "INSERT INTO `ecrivains` (`idecrivain`, `nom`, `prenom`, `nationalité`) 
+                VALUES (:idecrivain, :nom, :prenom, :nationalite)";
+        $stmt = $pdo->prepare($sql);
 
-        $stmt->bindParam(':nom', $authorName);
-        $stmt->bindParam(':prenom', $authorPrenom);
-        $stmt->bindParam(':nationalité', $authorNationalite);
+        // Exécution de la requête avec les données sécurisées
+        $stmt->execute([
+            ':idecrivain' => $EcrivainId,
+            ':nom' => $authorName,
+            ':prenom' => $authorPrenom,
+            ':nationalite' => $authorNationalite
+        ]);
 
-
-    $stmt->execute();
+        echo "Auteur ajouté avec succès !";
+    } else {
+        echo "Veuillez remplir tous les champs obligatoires.";
+    }
 }
+
+
+
 
 // Insertion d'un genre dans la base de données
 if (isset($_POST['submitGenre'])) {
@@ -105,6 +118,19 @@ if (isset($_POST['submitGenre'])) {
     <input type="text" name="nom_utilisateurs" placeholder="Nom de l'utilisateur">
     <input type="text" name="prenom_utilisateurs" placeholder="Prénom de l'utilisateur">
     <input type="text" name="email_" placeholder="Email de l'utilisateur">
+    <select name="idlivres">
+        <option value="">Sélectionner un livre</option>
+        <?php
+        $sqlLivres = "SELECT * FROM livres";
+        $stmtLivres = $pdo->prepare($sqlLivres);
+        $stmtLivres->execute();
+        $resultsLivres = $stmtLivres->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($resultsLivres as $livre) {
+            echo "<option value='" . $livre['id'] . "'>" . $livre['titre'] . "</option>";
+        }
+        ?>
+
     
     <input type="submit" name="submitUser" value="Envoyer l'utilisateur dans la BDD">   
 </form>   
@@ -115,9 +141,9 @@ if (isset($_POST['submitUser'])) {
     $userName = $_POST['nom_utilisateurs'];
     $userPrenom = $_POST['prenom_utilisateurs'];
     $userEmail = $_POST['email_'];
-    $userId = $_POST['id_utilisateurs'] ?? null; 
+    $userLivre = $_POST['idlivres'] ?? null;
 
-    $sql = "INSERT INTO `utilisateurs` (`id_utilisateurs`, `nom_utilisateurs`, `prenom_utilisateurs`, `email_`) VALUES ( `$userId`,'$userName', '$userPrenom', '$userEmail')";
+    $sql = "INSERT INTO `utilisateurs` ( `nom_utilisateurs`, `prenom_utilisateurs`, `email_`,`idlivres` ) VALUES ('$userName', '$userPrenom', '$userEmail', '$userLivre')";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
 }
