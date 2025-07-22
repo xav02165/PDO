@@ -6,7 +6,8 @@
     <title>PDO-bibliotheque</title>
 </head>
 <body>
-    
+    <h1>Bibliothèque - Gestion des livres</h1>  
+
   <?php
  //connexion a la bdd
         session_start();
@@ -18,27 +19,27 @@
 
         $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $password);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        echo "Connexion réussie !";    
+           
 
        
 ?>
 
 
 <form method="POST">
-    <label>Ajouter un Auteur dans la BDD</label>
-    <input type="text" name="nom" placeholder="Nom de l'auteur">
+    <label>Ajouter un Auteur dans la BDD</label><br>
+    <input type="text" name="nom" placeholder="Nom de l'auteur"><br>
+    <input type="text" name="prenom" placeholder="Prenom de l'auteur"><br>
+    <input type="text" name="nationalitée" placeholder="Nationalité de l'auteur"><br>
     <input type="submit" name="submitBook" value="Envoyer le nom de l'auteur dans la BDD">
     <br>
-    
-    <label>Ajouter un Genre dans la BDD</label>
-    <input type="text" name="genreName" placeholder="Nom du genre">
-    <input type="submit" name="submitGenre" value="Envoyer le genre dans la BDD">
     <br>
 
-    <label>Ajouter un Utilisateur dans la BDD</label>                                   
-    <input type="text" name="userName" placeholder="Nom de l'utilisateur">
-    <input type="submit" name="submitUser" value="Envoyer le nom de l'utilisateur dans la BDD">
+    <label>Ajouter un Genre dans la BDD</label><br>
+    <input type="text" name="libelle" placeholder="Nom du genre"><br>
+    <input type="submit" name="submitGenre" value="Envoyer le genre dans la BDD">
     <br>
+    <br>
+    
 
     <label>Ajouter un Livre dans la BDD</label>     
     <input type="text" name="bookName" placeholder="Nom du livre">
@@ -68,11 +69,20 @@
 <?php
 // Insertion d'un auteur dans la base de données
 
-    if (isset($_POST['submitName'])) {
-    $authorName = $_iPOST['nom'];
 
-    $sql = "INSERT INTO `ecrivains` (`nom`) VALUES ('$authorName')";
+if (isset($_POST['submitName'])) {
+    $authorName = $_POST['nom'];
+    $authorPrenom = $_POST['prenom'];
+    $authorNationalite = $_POST['nationalitée'];
+
+    $sql = "INSERT INTO `ecrivains` (`nom`, `prenom`, `nationalité`) VALUES (:nom, :prenom, :nationalité)";
     $stmt = $pdo->prepare($sql);
+
+        $stmt->bindParam(':nom', $authorName);
+        $stmt->bindParam(':prenom', $authorPrenom);
+        $stmt->bindParam(':nationalité', $authorNationalite);
+
+
     $stmt->execute();
 }
 
@@ -85,20 +95,72 @@ if (isset($_POST['submitGenre'])) {
     $stmt->execute();
 }
 
-// Insertion d'un utilisateur dans la base de données
+
+
+?>
+ 
+<h2> Gestion des Utilisateurs </h2>
+<form method="POST">
+    <label>Ajouter un Utilisateur</label>
+    <input type="text" name="nom_utilisateurs" placeholder="Nom de l'utilisateur">
+    <input type="text" name="prenom_utilisateurs" placeholder="Prénom de l'utilisateur">
+    <input type="text" name="email_" placeholder="Email de l'utilisateur">
+    
+    <input type="submit" name="submitUser" value="Envoyer l'utilisateur dans la BDD">   
+</form>   
+
+<?php
+// Insertion d'un utilisateur dans la base de données   
 if (isset($_POST['submitUser'])) {
     $userName = $_POST['nom_utilisateurs'];
+    $userPrenom = $_POST['prenom_utilisateurs'];
+    $userEmail = $_POST['email_'];
+    $userId = $_POST['id_utilisateurs'] ?? null; 
 
-    $sql = "INSERT INTO `utilisateurs` (`nom_utilisateurs`) VALUES ('$userName')";
+    $sql = "INSERT INTO `utilisateurs` (`id_utilisateurs`, `nom_utilisateurs`, `prenom_utilisateurs`, `email_`) VALUES ( `$userId`,'$userName', '$userPrenom', '$userEmail')";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+}
+?>
+
+<?php
+//Modifier un utilisateur
+if (isset($_POST['submitModifierUser'])) {
+    $userId = $_POST['id_utilisateurs'];
+    $userName = $_POST['nom_utilisateurs'];
+    $userPrenom = $_POST['prenom_utilisateurs'];
+    $userEmail = $_POST['email_'];
+
+    $sql = "UPDATE `utilisateurs` SET `nom_utilisateurs` = '$userName', `prenom_utilisateurs` = '$userPrenom', `email_` = '$userEmail' WHERE `id_utilisateurs` = $userId";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
 }
 
+    //pour delete:
+    $sqlAll = "SELECT * FROM `utilisateurs`";
+    $stmtAll = $pdo->prepare($sqlAll);
+    $stmtAll->execute();
+    $users = $stmtAll->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($users as $user) {
+        echo "<div>";
+        echo "<p>ID: {$user['id']}, Nom: {$user['nom_utilisateurs']}, Prénom: {$user['prenom_utilisateurs']}, Email: {$user['email_']}</p>";
+        echo "<form method='POST'>";
+        echo "<input type='hidden' name='userId' value='{$user['id']}'>";
+        echo "<input type='text' name='nom_utilisateurs' value='{$user['nom_utilisateurs']}'>";
+        echo "<input type='text' name='prenom_utilisateurs' value='{$user['prenom_utilisateurs']}'>";
+        echo "<input type='text' name='email_' value='{$user['email_']}'>";
+        echo "<input type='submit' name='submitModifierUser' value='Modifier'>";
+        echo "</form>";
+        echo "</div>";
+    }   
 ?>
- 
 
 
- 
+    
+
+
+
 
 </body>
 </html>
