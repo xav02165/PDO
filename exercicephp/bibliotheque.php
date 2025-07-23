@@ -157,7 +157,7 @@ if (isset($_POST['submitDeleteGenre'])) {
 <br>
 
 <h1> Gestion des Livres</h1>
-
+<form method="POST">
     <label>Ajouter un Livre dans la BDD</label>     
 
     <input type="text" name="bookName" placeholder="Nom du livre">
@@ -176,6 +176,8 @@ if (isset($_POST['submitDeleteGenre'])) {
         }
         
         ?>
+
+        
     </select>
         <select name="libelle">
         <option value="">Sélectionner un genre</option>
