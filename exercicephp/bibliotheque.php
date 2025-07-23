@@ -101,13 +101,14 @@ if (isset($_POST['submitDeleteAuthor'])) {
 
 <h1> Gestion des Genres</h1>
 
-
+<form method="POST">
     <label>Ajouter un Genre dans la BDD</label>
     <input type="text" name="libelle" placeholder="Nom du genre">
     <input type="submit" name="submitGenre" value="Envoyer le genre dans la BDD">
     <br>
     <br>
-    
+
+
 <?php
 // Insertion d'un genre dans la base de données
 if (isset($_POST['submitGenre'])) {
@@ -116,15 +117,19 @@ if (isset($_POST['submitGenre'])) {
     $sql = "INSERT INTO `genres` (`libelle`) VALUES ('$genreName')";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
+
+echo "Genre ajouté avec succès !";  
 }
 
 ?>
-
-<label>Supprimer un Genre</label>
-<form method="POST">    
-<select name="idgenre">
-    <option value="">Sélectionner un genre</option> 
+</form>
     
+
+
+    <form method="POST">  
+    <label>Supprimer un Genre</label>  
+    <select name="idgenre">
+    <option value="">Sélectionner un genre</option> 
     <?php   
     $sqlGenres = "SELECT * FROM genres";
     $stmtGenres = $pdo->prepare($sqlGenres);    
@@ -135,6 +140,7 @@ if (isset($_POST['submitGenre'])) {
     }   
     ?>
 </select>
+
 <input type="submit" name="submitDeleteGenre" value="Supprimer le genre">
 </form>
 <?php
@@ -220,19 +226,7 @@ if (isset($_POST['submit-Book'])) {
 
 
 
-<?php
-// Insertion d'un genre dans la base de données
-if (isset($_POST['submitGenre'])) {
-    $genreName = $_POST['libelle'];
 
-    $sql = "INSERT INTO `genres` (`libelle`) VALUES ('$genreName')";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-}
-
-
-
-?>
  
 <h2> Gestion des Utilisateurs </h2>
 <form method="POST">
