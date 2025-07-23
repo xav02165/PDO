@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>PDO-bibliotheque</title>
 </head>
 <body>
@@ -177,7 +178,7 @@ if (isset($_POST['submitDeleteGenre'])) {
         
         ?>
 
-        
+
     </select>
         <select name="libelle">
         <option value="">Sélectionner un genre</option>
