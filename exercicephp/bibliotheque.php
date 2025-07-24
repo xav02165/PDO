@@ -320,6 +320,58 @@ if (isset($_POST['submitDeleteUser'])) {
     echo "Utilisateur supprimé avec succès !";
 }
 ?>
+
+
+<br>
+<h1> Historique des Emprunts</h1>
+<form method="POST">
+    <label>Voir l'historique des emprunts d'un utilisateur</label>
+    <select name="id_utilisateurs">
+        <option value="">Sélectionner un utilisateur</option>
+        <?php   
+        $sqlUsers = "SELECT * FROM utilisateurs";
+        $stmtUsers = $pdo->prepare($sqlUsers);
+        $stmtUsers->execute();
+        $resultsUsers = $stmtUsers->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($resultsUsers as $user) {
+            echo "<option value='" . $user['id_utilisateurs'] . "'>" . $user['nom_utilisateurs'] . " " . $user['prenom_utilisateurs'] . "</option>";
+        }
+        ?>
+    </select>
+    <input type="submit" name="submitHistorique" value="Voir l'historique">
+</form> 
+<?php
+// Afficher l'historique des emprunts d'un utilisateur
+if (isset($_POST['submitHistorique'])) {    
+    $userId = $_POST['id_utilisateurs'];
+    $sql = "SELECT * FROM emprunts WHERE id_utilisateurs = :id_utilisateurs";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':id_utilisateurs' => $userId]);
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if ($results) {
+        echo "<h2>Historique des emprunts pour l'utilisateur ID: $userId</h2>";
+        echo "<table border='1'>
+                <tr>
+                    <th>ID Emprunt</th>
+                    <th>ID Livre</th>
+                    <th>Date Emprunt</th>
+                    <th>Date Retour</th>
+                </tr>";
+        foreach ($results as $emprunt) {
+            echo "<tr>
+                    <td>" . $emprunt['id_emprunts'] . "</td>
+                    <td>" . $emprunt['idlivres'] . "</td>
+                    <td>" . $emprunt['date_emprunt'] . "</td>
+                    <td>" . $emprunt['date_retour'] . "</td>
+                  </tr>";
+        }
+        echo "</table>";
+    } else {
+        echo "Aucun emprunt trouvé pour cet utilisateur.";
+    }
+}
+?>
+
     
     <h1> Gestion des Emprunts</h1>
 <form method="POST">
@@ -356,14 +408,16 @@ if (isset($_POST['submitDeleteUser'])) {
 if (isset($_POST['submitEmprunt'])) {
     $bookId = $_POST['idlivres'] ?? null;
     $dateEmprunt = $_POST['date_emprunt'] ?? null;
+    $Idemprunt = $_POST['id_emprunts'] ?? null; 
 
-    if (!empty($bookId) && !empty($dateEmprunt) && !empty($dateRetour)) {
+    if (!empty($bookId) ) {
         $sql = "INSERT INTO `emprunts` (`id_emprunts`, `idlivres`, `date_emprunt`) 
-                VALUES (NULL,:idlivres, :date_emprunt)";
+                VALUES (:id_emprunts, :idlivres, :date_emprunt)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             ':idlivres' => $bookId,
             ':date_emprunt' => $dateEmprunt,
+            ':id_emprunts' => $Idemprunt
     
         ]);
         echo "Emprunt enregistré avec succès !";
