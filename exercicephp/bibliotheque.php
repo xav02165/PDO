@@ -7,7 +7,7 @@
     <title>PDO-bibliotheque</title>
 </head>
 <body>
-    <h1>Bibliothèque </h1><br>
+    <h2>Gestion de la Bibliothèque </h2><br>
     <h1> Gestion des Auteurs</h1>  
 
   <?php
@@ -231,7 +231,7 @@ if (isset($_POST['submit-Book'])) {
 
 
  
-<h2> Gestion des Utilisateurs </h2>
+<h1> Gestion des Utilisateurs </h1>
 <form method="POST">
     <label>Ajouter un Utilisateur</label>
     <input type="text" name="nom_utilisateurs" placeholder="Nom de l'utilisateur">
