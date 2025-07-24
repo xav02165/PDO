@@ -98,6 +98,43 @@ if (isset($_POST['submitDeleteAuthor'])) {
 <br>
 
 
+<form method="POST">
+    <input type="submit" name="showAllAuthors" value="Afficher tous les auteurs et leurs livres">
+</form>
+<?php
+// Afficher tous les auteurs et leurs livres
+if (isset($_POST['showAllAuthors'])) {
+    $sql = "SELECT ecrivains.nom, ecrivains.prenom, livres.titre 
+            FROM ecrivains 
+            LEFT JOIN livres ON ecrivains.idecrivain = livres.idecrivain";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if ($results) {
+        echo "<h3>Liste des auteurs et leurs livres</h3>";
+        echo "<table border='1'>
+                <tr>
+                    <th>Auteur</th>
+                    <th>Livre</th>
+                </tr>";
+        foreach ($results as $author) {
+            echo "<tr>
+                    <td>" . htmlspecialchars($author['nom']) . " " . htmlspecialchars($author['prenom']) . "</td>
+                    <td>" . htmlspecialchars($author['titre']) . "</td>
+                  </tr>";
+        }
+        echo "</table>";
+    } else {
+        echo "Aucun auteur trouvé.";
+    }
+}
+?>
+
+<br>
+<br>
+
+
 
 
 <h1> Gestion des Genres</h1>
@@ -207,30 +244,69 @@ if (isset($_POST['submit-Book'])) {
     $ecrivainId = $_POST['nom'] ?? null;
 
 
-    if (!empty($bookName) && !empty($annee) && !empty($genreId)) {
-        $sql = "INSERT INTO `livres` (`idlivres`,`titre`, `idecrivain`, `annee`, `idgenre`,`id_emprunts`, `id_utilisateurs`) 
-                VALUES (:idlivres, :titre, :idecrivain, :annee, :idgenre, :id_emprunts, :id_utilisateurs)";
+    if (!empty($bookName) && !empty($annee) && !empty($genreId) && !empty($ecrivainId)) {
+        $sql = "INSERT INTO `livres` (`titre`, `idecrivain`, `annee`, `idgenre`)
+        VALUES (:titre, :idecrivain, :annee, :idgenre)";
+
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':idlivres' => null, // Auto-incrementé par la base de données
+       $stmt->execute([
             ':titre' => $bookName,
             ':idecrivain' => $ecrivainId,
             ':annee' => $annee,
             ':idgenre' => $genreId,
-            ':id_emprunts' => null, 
-            ':id_utilisateurs' => null,
-        ]);
+            ]);
+
+    };
         echo "Livre ajouté avec succès !";
 
     } else {
         echo "Veuillez remplir tous les champs obligatoires.";
     }
-}
+
 ?>
 
 
+<form method="POST">
+    <label>Supprimer un Livre</label>
+    <select name="idlivres">
+        <option value="">Sélectionner un livre</option>
+        <?php   
+        $sqlBooks = "SELECT * FROM livres";
+        $stmtBooks = $pdo->prepare($sqlBooks);
+        $stmtBooks->execute();
+        $resultsBooks = $stmtBooks->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($resultsBooks as $book) {
+            echo "<option value='" . $book['idlivres'] . "'>" . $book['titre'] . "</option>";
+        }
+        ?>
+    </select>
+    <input type="submit" name="submitDeleteBook" value="Supprimer le livre">
+</form>
 
+<?php
 
+// Supprimer un livre et verifier si il n'est pas emprunté
+if (isset($_POST['submitDeleteBook'])) {    
+    $bookId = $_POST['idlivres'];
+
+    // Vérifier si le livre est emprunté
+    $checkEmpruntSql = "SELECT COUNT(*) FROM emprunts WHERE idlivres = :idlivres";
+    $checkStmt = $pdo->prepare($checkEmpruntSql);
+    $checkStmt->execute([':idlivres' => $bookId]);
+    $isEmprunte = $checkStmt->fetchColumn() > 0;
+
+    if ($isEmprunte) {
+        echo "Le livre ne peut pas être supprimé car il est actuellement emprunté.";
+    } else {
+        $sql = "DELETE FROM `livres` WHERE `idlivres` = :idlivres";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':idlivres' => $bookId]);
+        echo "Livre supprimé avec succès !";
+    }
+}
+
+?>
+<br>
 
  
 <h1> Gestion des Utilisateurs </h1>
@@ -477,6 +553,43 @@ if (isset($_POST['submitDateRetour'])) {
 
 ?>
 
+<h1> Afficher tous les livres</h1>
+<form method="POST">
+    <input type="submit" name="showAllBooks" value="Afficher tous les livres">
+</form>
+<?php
+// Afficher tous les livres avec leurs auteurs et genres
+if (isset($_POST['showAllBooks'])) {
+    $sql = "SELECT livres.titre, ecrivains.nom, ecrivains.prenom, genres.libelle 
+            FROM livres 
+            JOIN ecrivains ON livres.idecrivain = ecrivains.idecrivain 
+            JOIN genres ON livres.idgenre = genres.idgenre";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if ($results) {
+        echo "<h3>Liste des livres</h3>";
+        echo "<table border='1'>
+                <tr>
+                    <th>Titre</th>
+                    <th>Auteur</th>
+                    <th>Genre</th>
+                </tr>";
+        foreach ($results as $book) {
+            echo "<tr>
+                    <td>" . htmlspecialchars($book['titre']) . "</td>
+                    <td>" . htmlspecialchars($book['nom']) . " " . htmlspecialchars($book['prenom']) . "</td>
+                    <td>" . htmlspecialchars($book['libelle']) . "</td>
+                  </tr>";
+        }
+        echo "</table>";
+    } else {
+        echo "Aucun livre trouvé.";
+    }
+}
+?>
+</form> 
    
 </body>
 </html>
