@@ -206,9 +206,10 @@ if (isset($_POST['submit-Book'])) {
     $genreId = $_POST['libelle'] ?? null;
     $ecrivainId = $_POST['nom'] ?? null;
 
+
     if (!empty($bookName) && !empty($annee) && !empty($genreId)) {
-        $sql = "INSERT INTO `livres` (`idlivres`,`titre`, `idecrivain`, `annee`, `idgenre`,`id_emprunts`) 
-                VALUES (:idlivres, :titre, :idecrivain, :annee, :idgenre, :id_emprunts)";
+        $sql = "INSERT INTO `livres` (`idlivres`,`titre`, `idecrivain`, `annee`, `idgenre`,`id_emprunts`, `id_utilisateurs`) 
+                VALUES (:idlivres, :titre, :idecrivain, :annee, :idgenre, :id_emprunts, :id_utilisateurs)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             ':idlivres' => null, // Auto-incrementé par la base de données
@@ -217,6 +218,7 @@ if (isset($_POST['submit-Book'])) {
             ':annee' => $annee,
             ':idgenre' => $genreId,
             ':id_emprunts' => null, 
+            ':id_utilisateurs' => null,
         ]);
         echo "Livre ajouté avec succès !";
 
@@ -247,7 +249,7 @@ if (isset($_POST['submitUser'])) {
     $userEmail = $_POST['email_'];
     
 
-    $sql = "INSERT INTO `utilisateurs` ( `nom_utilisateurs`, `prenom_utilisateurs`, `email_` ) VALUES ('$userName', '$userPrenom', '$userEmail')";
+    $sql = "INSERT INTO `utilisateurs` ( `nom_utilisateurs`, `prenom_utilisateurs`, `email_`) VALUES ('$userName', '$userPrenom', '$userEmail')";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
 }
@@ -284,7 +286,7 @@ if (isset($_POST['submitModifierUser'])) {
     $userEmail = $_POST['email_'];
     
 
-    $sql = "UPDATE `utilisateurs` SET `nom_utilisateurs` = '$userName', `prenom_utilisateurs` = '$userPrenom', `email_` = '$userEmail',  WHERE `id_utilisateurs` = $userId";
+    $sql = "UPDATE `utilisateurs` SET `nom_utilisateurs` = '$userName', `prenom_utilisateurs` = '$userPrenom', `email_` = '$userEmail'  WHERE `id_utilisateurs` = $userId";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
 }
@@ -352,6 +354,9 @@ if (isset($_POST['submitHistorique'])) {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id_utilisateurs' => $userId]);
     
+    
+    // Récupération des emprunts de l'utilisateur
+
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
     if ($results) {
         echo "<h2>Historique des emprunts pour l'utilisateur ID: $userId</h2>";
@@ -413,16 +418,18 @@ if (isset($_POST['submitHistorique'])) {
 if (isset($_POST['submitEmprunt'])) {
     $bookId = $_POST['idlivres'] ?? null;
     $dateEmprunt = $_POST['date_emprunt'] ?? null;
-    $Idemprunt = $_POST['id_emprunts'] ?? null; 
+    $userId = $_POST['id_utilisateurs'] ?? null;
 
     if (!empty($bookId) ) {
-        $sql = "INSERT INTO `emprunts` (`id_emprunts`, `idlivres`, `date_emprunt`) 
-                VALUES (:id_emprunts, :idlivres, :date_emprunt)";
+        $sql = "INSERT INTO `emprunts` (`id_emprunts`, `idlivres`, `date_emprunt`, `id_utilisateurs`) 
+                VALUES (:id_emprunts, :idlivres, :date_emprunt, :id_utilisateurs)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             ':idlivres' => $bookId,
             ':date_emprunt' => $dateEmprunt,
-            ':id_emprunts' => $Idemprunt
+            ':id_emprunts' => $Idemprunt,
+            ':id_utilisateurs' => $userId,
+
     
         ]);
         echo "Emprunt enregistré avec succès !";
