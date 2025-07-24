@@ -340,13 +340,18 @@ if (isset($_POST['submitDeleteUser'])) {
     </select>
     <input type="submit" name="submitHistorique" value="Voir l'historique">
 </form> 
+
+
 <?php
 // Afficher l'historique des emprunts d'un utilisateur
 if (isset($_POST['submitHistorique'])) {    
     $userId = $_POST['id_utilisateurs'];
-    $sql = "SELECT * FROM emprunts WHERE id_utilisateurs = :id_utilisateurs";
+
+    $sql = "SELECT * FROM emprunts WHERE id_utilisateurs  = :id_utilisateurs";
+
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id_utilisateurs' => $userId]);
+    
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
     if ($results) {
         echo "<h2>Historique des emprunts pour l'utilisateur ID: $userId</h2>";
