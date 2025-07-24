@@ -321,6 +321,96 @@ if (isset($_POST['submitDeleteUser'])) {
 }
 ?>
     
+    <h1> Gestion des Emprunts</h1>
+<form method="POST">
+    <label>Ajouter un Emprunt</label>               
+    <select name="id_utilisateurs">
+        <option value="">Sélectionner un utilisateur</option>
+        <?php   
+        $sqlUsers = "SELECT * FROM utilisateurs";
+        $stmtUsers = $pdo->prepare($sqlUsers);
+        $stmtUsers->execute();
+        $resultsUsers = $stmtUsers->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($resultsUsers as $user) {
+            echo "<option value='" . $user['id_utilisateurs'] . "'>" . $user['nom_utilisateurs'] . " " . $user['prenom_utilisateurs'] . "</option>";
+        }
+        ?>
+    </select>
+    <select name="idlivres">
+        <option value="">Sélectionner un livre</option>
+        <?php   
+        $sqlBooks = "SELECT * FROM livres";
+        $stmtBooks = $pdo->prepare($sqlBooks);
+        $stmtBooks->execute();
+        $resultsBooks = $stmtBooks->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($resultsBooks as $book) {
+            echo "<option value='" . $book['idlivres'] . "'>" . $book['titre'] . "</option>";
+        }
+        ?>
+    </select>
+    <input type="date" name="date_emprunt">
+    <input type="submit" name="submitEmprunt" value="Enregistrer l'emprunt">
+</form>
+<?php
+// Insertion d'un emprunt dans la base de données
+if (isset($_POST['submitEmprunt'])) {
+    $bookId = $_POST['idlivres'] ?? null;
+    $dateEmprunt = $_POST['date_emprunt'] ?? null;
+
+    if (!empty($bookId) && !empty($dateEmprunt) && !empty($dateRetour)) {
+        $sql = "INSERT INTO `emprunts` (`id_emprunts`, `idlivres`, `date_emprunt`) 
+                VALUES (NULL,:idlivres, :date_emprunt)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':idlivres' => $bookId,
+            ':date_emprunt' => $dateEmprunt,
+    
+        ]);
+        echo "Emprunt enregistré avec succès !";
+    } else {
+        echo "Veuillez remplir tous les champs obligatoires.";
+    }
+}
+?>
+
+<form method="POST">
+    <label>Ajouter une date de retour</label>
+    <select name="id_emprunts">
+        <option value="">Sélectionner un emprunt</option>
+        <?php   
+        $sqlEmprunts = "SELECT * FROM emprunts";
+        $stmtEmprunts = $pdo->prepare($sqlEmprunts);
+        $stmtEmprunts->execute();
+        $resultsEmprunts = $stmtEmprunts->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($resultsEmprunts as $emprunt) {
+            echo "<option value='" . $emprunt['id_emprunts'] . "'>" . $emprunt['id_emprunts'] . "</option>";
+        }
+        ?>
+    </select>
+    <input type="date" name="dateRetour">
+    <input type="submit" name="submitDateRetour" value="Enregistrer la date de retour">
+</form>
+<?php
+// Insertion d'une date de retour dans la base de données
+if (isset($_POST['submitDateRetour'])) {
+    $empruntId = $_POST['id_emprunts'] ?? null;
+    $dateRetour = $_POST['dateRetour'] ?? null;
+
+    if (!empty($empruntId) && !empty($dateRetour)) {
+        $sql = "UPDATE `emprunts` SET `date_retour` = :date_retour WHERE `id_emprunts` = :id_emprunts";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':id_emprunts' => $empruntId,
+            ':date_retour' => $dateRetour,
+        ]);
+        echo "Date de retour enregistrée avec succès !";
+    } else {
+        echo "Veuillez remplir tous les champs obligatoires.";
+    }
+}
+
+?>
+
    
 </body>
 </html>
