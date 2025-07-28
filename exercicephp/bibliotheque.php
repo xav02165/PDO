@@ -9,7 +9,10 @@
 <body>
     <h2>Gestion de la Bibliothèque </h2><br>
     <h1> Gestion des Auteurs</h1>  
+ 
 
+
+    
   <?php
  //connexion a la bdd
         session_start();
