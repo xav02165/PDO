@@ -63,8 +63,10 @@ class Chat {
 
 $chat = new Chat('gouttiere', "court", "blanc", "orange", "femelle");
 var_dump($chat);
+    
 
-//creer objet voiture
+
+//objet voiture
 class Voiture {
 
     // Variable
@@ -111,4 +113,6 @@ class Voiture {
 }
 $voiture = new Voiture('Toyota', 'Corolla', 'bleu', 2020);
 var_dump($voiture);
+
+
 
