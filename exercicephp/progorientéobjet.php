@@ -63,3 +63,52 @@ class Chat {
 
 $chat = new Chat('gouttiere', "court", "blanc", "orange", "femelle");
 var_dump($chat);
+
+//creer objet voiture
+class Voiture {
+
+    // Variable
+    private $marque;
+    private $modele;
+    private $couleur;
+    private $annee;
+
+    // Construct
+    public function __construct($marque, $modele, $couleur, $annee) {
+        $this->marque = $marque;
+        $this->modele = $modele;
+        $this->couleur = $couleur;
+        $this->annee = $annee;
+    }
+
+    // Getter
+    public function getMarque(){
+        return $this->marque;
+    }
+    public function getModele(){
+        return $this->modele;
+    }
+    public function getCouleur(){
+        return $this->couleur;
+    }
+    public function getAnnee(){
+        return $this->annee;
+    }
+
+    // Setter
+    public function setMarque($marque){
+        return $this->marque = $marque;
+    }
+    public function setModele($modele){
+        return $this->modele = $modele;
+    }
+    public function setCouleur($couleur){
+        return $this->couleur = $couleur;
+    }
+    public function setAnnee($annee){
+        return $this->annee = $annee;
+    }
+}
+$voiture = new Voiture('Toyota', 'Corolla', 'bleu', 2020);
+var_dump($voiture);
+
