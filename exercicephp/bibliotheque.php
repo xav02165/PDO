@@ -553,6 +553,83 @@ if (isset($_POST['submitDateRetour'])) {
 
 ?>
 
+<form method="POST">
+    <label>Afficher les livres disponibles</label>
+    <input type="submit" name="showAvailableBooks" value="Afficher les livres disponibles">
+</form>
+<?php
+// Afficher les livres disponibles
+if (isset($_POST['showAvailableBooks'])) {  
+    $sql = "SELECT livres.titre, ecrivains.nom, ecrivains.prenom, genres.libelle 
+            FROM livres 
+            JOIN ecrivains ON livres.idecrivain = ecrivains.idecrivain 
+            JOIN genres ON livres.idgenre = genres.idgenre 
+            WHERE livres.idlivres NOT IN (SELECT idlivres FROM emprunts WHERE date_retour IS NULL)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if ($results) {
+        echo "<h3>Livres disponibles</h3>";
+        echo "<table border='1'>
+                <tr>
+                    <th>Titre</th>
+                    <th>Auteur</th>
+                    <th>Genre</th>
+                </tr>";
+        foreach ($results as $book) {
+            echo "<tr>
+                    <td>" . htmlspecialchars($book['titre']) . "</td>
+                    <td>" . htmlspecialchars($book['nom']) . " " . htmlspecialchars($book['prenom']) . "</td>
+                    <td>" . htmlspecialchars($book['libelle']) . "</td>
+                  </tr>";
+        }
+        echo "</table>";
+    } else {
+        echo "Aucun livre disponible.";
+    }
+}
+?>
+
+<form method="POST">
+    <label>Afficher les livres empruntés</label>
+    <input type="submit" name="showBorrowedBooks" value="Afficher les livres empruntés">
+</form>
+<?php
+// Afficher les livres empruntés avec leurs utilisateurs
+if (isset($_POST['showBorrowedBooks'])) {
+    $sql = "SELECT livres.titre, utilisateurs.nom_utilisateurs, utilisateurs.prenom_utilisateurs, emprunts.date_emprunt 
+            FROM emprunts 
+            JOIN livres ON emprunts.idlivres = livres.idlivres 
+            JOIN utilisateurs ON emprunts.id_utilisateurs = utilisateurs.id_utilisateurs 
+            WHERE emprunts.date_retour IS NULL";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if ($results) {
+        echo "<h3>Livres empruntés</h3>";
+        echo "<table border='1'>
+                <tr>
+                    <th>Titre</th>
+                    <th>Utilisateur</th>
+                    <th>Date Emprunt</th>
+                </tr>";
+        foreach ($results as $book) {
+            echo "<tr>
+                    <td>" . htmlspecialchars($book['titre']) . "</td>
+                    <td>" . htmlspecialchars($book['nom_utilisateurs']) . " " . htmlspecialchars($book['prenom_utilisateurs']) . "</td>
+                    <td>" . htmlspecialchars($book['date_emprunt']) . "</td>
+                  </tr>";
+        }
+        echo "</table>";
+    } else {
+        echo "Aucun livre emprunté.";
+    }
+}
+
+?>
+
 <h1> Afficher tous les livres</h1>
 <form method="POST">
     <input type="submit" name="showAllBooks" value="Afficher tous les livres">
