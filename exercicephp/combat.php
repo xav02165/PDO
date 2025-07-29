@@ -99,6 +99,31 @@ public function attaquer($adversaire) {
 
 }
 
+class sangoku extends personnage {
+    private $kamehamehaUtilise = false;
+
+    public function subirDegats($degats) {
+        $this->vie -= $degats;
+        echo " Sangoku encaisse $degats dégâts. Il lui reste {$this->vie} PV.<br>";
+    }
+
+    public function attaquer($cible) {
+        if ($this->vie <= 0) {
+            echo "<p>$this->nom est KO et ne peut plus attaquer.</p>";
+            return;
+        }
+
+        if (!$this->kamehamehaUtilise) {
+            $this->kamehamehaUtilise = true;
+            echo "<p><strong style='color:blue;'>$this->nom lance un KAMEHAMEHA surpuissant ! 🌊💥</strong></p>";
+            $cible->subirDegats(60);
+        } else {
+            $degats = $this->force;
+            $cible->subirDegats($degats);
+            echo "<p>$this->nom attaque avec force normale et inflige $degats dégâts.</p>";
+        }
+    }
+}
 
 
 
@@ -140,6 +165,7 @@ echo "<select name='personnage'>";
 echo "<option value='guerrier'>Guerrier</option>";
 echo "<option value='voleur'>Voleur</option>";
 echo "<option value='magicien'>Magicien</option>";
+echo "<option value='sangoku'>Sangoku</option>";
 echo "</select>";
 echo "<input type='submit' name='valider_personnage' value='Choisir le personnage'>";
 echo "</form>";
@@ -166,6 +192,9 @@ if (isset($_POST['combat']) && isset($_SESSION['personnage'])) {
         case 'magicien':
             $personnageChoisi = new magicien("Magicien", 90, 8);
             break;
+case 'sangoku':
+    $personnageChoisi = new sangoku("Sangoku", 100, 20);
+    break;
 
     
     }
