@@ -77,6 +77,26 @@ class guerrier extends personnage {
         $this->vie -= $degats;
         echo " Le guerrier perd $degats points de vie. Il lui reste {$this->vie} PV.<br>";
     }
+    private $coupCritiqueUtilise = false;
+public function attaquer($adversaire) {
+    if ($this->vie <= 0) {
+        echo "<p>$this->nom est hors de combat et ne peut pas attaquer.</p>";
+        return;
+    }
+
+    // Coup critique s'il n'est pas encore utilisé
+    if (!$this->coupCritiqueUtilise) {
+        $this->coupCritiqueUtilise = true;
+        echo "<p><strong style='color:red;'>$this->nom déclenche son COUP CRITIQUE dévastateur ! 💥</strong></p>";
+        $adversaire->subirDegats(70);
+    } else {
+        // Attaque normale
+        $degats = $this->force;
+        $adversaire->subirDegats($degats);
+        echo "<p>$this->nom attaque " . $adversaire->getNom() . " et inflige $degats dégâts.</p>";
+    }
+}
+
 }
 
 
@@ -147,7 +167,10 @@ if (isset($_POST['combat']) && isset($_SESSION['personnage'])) {
             $personnageChoisi = new magicien("Magicien", 90, 8);
             break;
 
-        if ($_SESSION['personnage'] === 'guerrier') {
+    
+    }
+
+if ($_SESSION['personnage'] === 'guerrier') {
     echo "<h2>Alliance entre le voleur et le magicien contre le guerrier !</h2>";
     $guerrier = $personnageChoisi;
     $voleur = new voleur("Voleur", 100, 12);
@@ -178,8 +201,6 @@ if (isset($_POST['combat']) && isset($_SESSION['personnage'])) {
     session_destroy();
     return;
 }
-    
-    }
 
     // Création des adversaires
     $guerrier = new guerrier("Guerrier", 120, 15);
