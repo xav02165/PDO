@@ -146,6 +146,39 @@ if (isset($_POST['combat']) && isset($_SESSION['personnage'])) {
         case 'magicien':
             $personnageChoisi = new magicien("Magicien", 90, 8);
             break;
+
+        if ($_SESSION['personnage'] === 'guerrier') {
+    echo "<h2>Alliance entre le voleur et le magicien contre le guerrier !</h2>";
+    $guerrier = $personnageChoisi;
+    $voleur = new voleur("Voleur", 100, 12);
+    $magicien = new magicien("Magicien", 90, 8);
+
+    // Combat en équipe
+    while ($guerrier->getVie() > 0 && ($voleur->getVie() > 0 || $magicien->getVie() > 0)) {
+        if ($voleur->getVie() > 0) {
+            $voleur->attaquer($guerrier);
+        }
+        if ($guerrier->getVie() > 0 && $voleur->getVie() > 0) {
+            $guerrier->attaquer($voleur);
+        }
+
+        if ($magicien->getVie() > 0) {
+            $magicien->attaquer($guerrier);
+        }
+        if ($guerrier->getVie() > 0 && $magicien->getVie() > 0) {
+            $guerrier->attaquer($magicien);
+        }
+
+        $guerrier->afficherEtat();
+        $voleur->afficherEtat();
+        $magicien->afficherEtat();
+    }
+
+    echo "<h3>" . ($guerrier->getVie() > 0 ? "Le guerrier a gagné !" : "Le voleur et le magicien ont triomphé !") . "</h3>";
+    session_destroy();
+    return;
+}
+    
     }
 
     // Création des adversaires
