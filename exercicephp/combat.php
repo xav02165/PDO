@@ -82,7 +82,17 @@ class guerrier extends personnage {
 
 
 
-class voleur extends personnage {}
+class voleur extends personnage {
+    public function subirDegats($degats) {
+        // 30% de chance d'esquiver
+        if (rand(1, 100) <= 30) {
+            echo " Le voleur esquive l'attaque avec grâce ! Aucun dégât subi.<br>";
+        } else {
+            $this->vie -= $degats;
+            echo "Le voleur n'a pas esquivé. Il perd $degats PV. Il lui reste {$this->vie} PV.<br>";
+        }
+    }
+}
 
 class magicien extends personnage {
     
