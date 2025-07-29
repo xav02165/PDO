@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,8 +15,13 @@ session_start();
 // Classe de base
 class personnage {
     public $nom;
-    public $vie;
-    public $force;
+    protected $vie;
+    protected $force;
+
+    public function subirDegats($degats) {
+        $this->vie -= $degats;
+        echo " $degats dégâts subis ! PV restants : {$this->vie}<br>";
+    }
 
     //Constructeur
     public function __construct($nom, $vie, $force) {
@@ -66,9 +71,37 @@ class personnage {
 }
 
 //  Classes enfants
-class guerrier extends personnage {}
+class guerrier extends personnage {
+    
+    public function subirDegats($degats) {
+        $this->vie -= $degats;
+        echo " Le guerrier perd $degats points de vie. Il lui reste {$this->vie} PV.<br>";
+    }
+}
+
+
+
+
 class voleur extends personnage {}
-class magicien extends personnage {}
+
+class magicien extends personnage {
+    
+    public function attaquer($cible) {
+        $forceAttaque = $this->getForce();
+
+        // 50% de chance de doubler la force
+        if (rand(0, 1) === 1) {
+            $forceAttaque *= 2;
+            echo " Coup critique magique ! Force doublée à $forceAttaque<br>";
+        } else {
+            echo " Attaque normale avec force de $forceAttaque<br>";
+        }
+
+        $cible->subirDegats($forceAttaque);
+    }
+}
+
+
 
 //  Choix du personnage
 echo "<h2>Choisissez votre personnage :</h2>";
