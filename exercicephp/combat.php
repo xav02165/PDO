@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+
+<?php
+session_start();
+
+// Classe de base
+class personnage {
+    public $nom;
+    public $vie;
+    public $force;
+
+    //Constructeur
+    public function __construct($nom, $vie, $force) {
+        $this->nom = $nom;
+        $this->vie = $vie;
+        $this->force = $force;
+    }
+
+    //Getter
+    public function getNom() {
+        return $this->nom;
+    }
+    public function getVie() {
+        return $this->vie;
+    }
+    public function getForce() {
+        return $this->force;
+    }
+
+    //Setter
+    public function setVie($vie) {
+        $this->vie = $vie;
+    }
+
+    // Méthode
+    public function attaquer($adversaire) {
+        if ($this->vie > 0) {
+            $degats = $this->force;
+            $adversaire->recevoirDegats($degats);
+            echo "<p>$this->nom attaque " . $adversaire->getNom() . " et inflige $degats dégâts.</p>";
+        } else {
+            echo "<p>$this->nom est hors de combat et ne peut pas attaquer.</p>";
+        }
+    }
+
+    public function recevoirDegats($degats) {
+        $this->vie -= $degats;
+        if ($this->vie < 0) $this->vie = 0;
+    }
+
+    public function afficherEtat() {
+        echo "<p>Nom: $this->nom<br>Vie: $this->vie<br>Force: $this->force</p>";
+        echo ($this->vie > 0)
+            ? "<p>$this->nom est toujours en vie.</p>"
+            : "<p>$this->nom est hors de combat.</p>";
+    }
+}
+
+//  Classes enfants
+class guerrier extends personnage {}
+class voleur extends personnage {}
+class magicien extends personnage {}
+
+//  Choix du personnage
+echo "<h2>Choisissez votre personnage :</h2>";
+echo "<form method='post'>";
+echo "<select name='personnage'>";
+echo "<option value='guerrier'>Guerrier</option>";
+echo "<option value='voleur'>Voleur</option>";
+echo "<option value='magicien'>Magicien</option>";
+echo "</select>";
+echo "<input type='submit' name='valider_personnage' value='Choisir le personnage'>";
+echo "</form>";
+
+//  Traitement du choix
+if (isset($_POST['valider_personnage'])) {
+    $_SESSION['personnage'] = $_POST['personnage'];
+    echo "<p>Personnage choisi : " . $_SESSION['personnage'] . "</p>";
+    echo "<form method='post'>";
+    echo "<input type='submit' name='combat' value='Lancer le combat'>";
+    echo "</form>";
+}
+
+//  Combat déclenché
+if (isset($_POST['combat']) && isset($_SESSION['personnage'])) {
+    // Création du personnage choisi
+    switch ($_SESSION['personnage']) {
+        case 'guerrier':
+            $personnageChoisi = new guerrier("Guerrier", 120, 15);
+            break;
+        case 'voleur':
+            $personnageChoisi = new voleur("Voleur", 100, 12);
+            break;
+        case 'magicien':
+            $personnageChoisi = new magicien("Magicien", 90, 8);
+            break;
+    }
+
+    // Création des adversaires
+    $guerrier = new guerrier("Guerrier", 120, 15);
+    $voleur = new voleur("Voleur", 100, 12);
+    $magicien = new magicien("Magicien", 90, 8);
+
+    $adversaires = array($guerrier, $voleur, $magicien);
+    $adversaires = array_filter($adversaires, fn($p) => $p->getNom() !== $personnageChoisi->getNom());
+    $adversaireChoisi = $adversaires[array_rand($adversaires)];
+
+    echo "<h2>Combat entre " . $personnageChoisi->getNom() . " et " . $adversaireChoisi->getNom() . "</h2>";
+
+    //  Boucle de combat
+    while ($personnageChoisi->getVie() > 0 && $adversaireChoisi->getVie() > 0) {
+        $personnageChoisi->attaquer($adversaireChoisi);
+        $adversaireChoisi->afficherEtat();
+        if ($adversaireChoisi->getVie() > 0) {
+            $adversaireChoisi->attaquer($personnageChoisi);
+            $personnageChoisi->afficherEtat();
+        }
+    }
+
+    //  Résultat du combat
+    $vainqueur = ($personnageChoisi->getVie() > 0) ? $personnageChoisi : $adversaireChoisi;
+    echo "<h3> " . $vainqueur->getNom() . " a gagné le combat !</h3>";
+
+     //  Bilan final
+    echo "<h4>État final de " . $personnageChoisi->getNom() . ":</h4>";
+    $personnageChoisi->afficherEtat();
+    echo "<h4>État final de " . $adversaireChoisi->getNom() . ":</h4>";
+    $adversaireChoisi->afficherEtat();
+
+    // Reset session (si besoin )
+    session_destroy();
+}
+?>
+
+</body>
+</html>
