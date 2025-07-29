@@ -36,6 +36,14 @@ public function aboyer(){
     }
 }
 
+$chien1 = new chien("Rex", "Berger Allemand");
+var_dump($chien1);
+
+$chien1->aboyer();
+
+$chien1->setNom("Max");
+$chien1->aboyer();
+
 
 
 
