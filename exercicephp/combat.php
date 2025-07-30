@@ -119,7 +119,7 @@ class guerrier extends personnage {
         echo " Le guerrier perd $degats points de vie. Il lui reste {$this->vie} PV.<br>";
     }
     private $coupCritiqueUtilise = false;
-public function attaquer($adversaire) {
+    public function attaquer($adversaire) {
     if ($this->vie <= 0) {
         echo "<p>$this->nom est hors de combat et ne peut pas attaquer.</p>";
         return;
@@ -183,7 +183,7 @@ class voleur extends personnage {
 class magicien extends personnage {
     private $potionUtilisee = false;
 
-public function attaquer($cible) {
+    public function attaquer($cible) {
     if ($this->vie <= 0) {
         echo "<p>$this->nom est KO et ne peut plus attaquer.</p>";
         return;
@@ -213,7 +213,7 @@ public function attaquer($cible) {
 
     $cible->subirDegats($forceAttaque);
 }
-private function invoquerNecromancie($cible) {
+    private function invoquerNecromancie($cible) {
     $degatsNecro = rand(10, 30); // Tu peux ajuster les dégâts ici
     echo "<p style='color:purple;'>💀 $this->nom invoque les esprits des ténèbres et inflige $degatsNecro dégâts à {$cible->getNom()} !</p>";
     $cible->subirDegats($degatsNecro);
