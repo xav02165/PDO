@@ -5,6 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+.health-bar {
+  width: 200px;
+  background-color: #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+.health-fill {
+  height: 20px;
+  background-color: #4CAF50;
+  border-radius: 5px;
+  text-align: center;
+  color: white;
+  line-height: 20px;
+  font-size: 12px;
+}
+</style>
+
 </head>
 <body>
     
@@ -21,7 +39,16 @@ class personnage {
     public function subirDegats($degats) {
         $this->vie -= $degats;
         echo " $degats dégâts subis ! PV restants : {$this->vie}<br>";
+
     }
+    public function afficherBarreVie() {
+    $pourcentage = ($this->vie / 120) * 100; // à adapter selon le max de PV
+    if ($pourcentage < 0) $pourcentage = 0;
+
+    echo "<div class='health-bar'>";
+    echo "<div class='health-fill' style='width:{$pourcentage}%;'>" . intval($this->vie) . " PV</div>";
+    echo "</div>";
+}
 
     //Constructeur
     public function __construct($nom, $vie, $force) {
@@ -63,10 +90,12 @@ class personnage {
     }
 
     public function afficherEtat() {
-        echo "<p>Nom: $this->nom<br>Vie: $this->vie<br>Force: $this->force</p>";
-        echo ($this->vie > 0)
-            ? "<p>$this->nom est toujours en vie.</p>"
-            : "<p>$this->nom est hors de combat.</p>";
+       echo "<p><strong>$this->nom</strong></p>";
+    $this->afficherBarreVie();
+    echo "<p>Force : $this->force</p>";
+    echo ($this->vie > 0)
+        ? "<p style='color:green;'>$this->nom est toujours en vie.</p>"
+        : "<p style='color:red;'>$this->nom est hors de combat.</p>";
     }
 }
 
