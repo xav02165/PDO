@@ -112,8 +112,7 @@ class personnage {
 
 //  Classes enfants
 class guerrier extends personnage {
-    private $berserkerActive = false;
-    private $toursBerserker = 0;
+    
 
     public function subirDegats($degats) {
         $this->vie -= $degats;
