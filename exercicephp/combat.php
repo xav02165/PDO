@@ -4,36 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style1.css">
     <title>Document</title>
-    <style>
-.health-bar {
-  width: 200px;
-  background-color: #ddd;
-  border-radius: 5px;
-  margin-bottom: 10px;
-}
-.health-fill {
-  height: 20px;
-  background-color: #4CAF50;
-  border-radius: 5px;
-  text-align: center;
-  color: white;
-  line-height: 20px;
-  font-size: 12px;
-}
-</style>
-<style>
-.fantome {
-  animation: apparition 1s ease-out;
-  color: #7f00ff;
-  font-weight: bold;
-}
-@keyframes apparition {
-  0% { opacity: 0; transform: translateY(-20px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-</style>
-
+    
 </head>
 <body>
     
