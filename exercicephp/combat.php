@@ -112,7 +112,9 @@ class personnage {
 
 //  Classes enfants
 class guerrier extends personnage {
-    
+    private $berserkerActive = false;
+    private $toursBerserker = 0;
+
     public function subirDegats($degats) {
         $this->vie -= $degats;
         echo " Le guerrier perd $degats points de vie. Il lui reste {$this->vie} PV.<br>";
@@ -180,37 +182,45 @@ class voleur extends personnage {
 }
 
 class magicien extends personnage {
-    private function invoquerNecromancie($cible) {
-        echo "<p style='color:purple; font-weight:bold;'>🕯️ Le magicien invoque une aura de NÉCROMANCIE... un fantôme surgit ! 👻</p>";
-        for ($i = 1; $i <= 5; $i++) {
-            echo "<p class='fantome'>👻 Attaque fantôme #$i : 5 dégâts</p>";
-            $cible->subirDegats(5);
-        }
+    private $potionUtilisee = false;
+
+public function attaquer($cible) {
+    if ($this->vie <= 0) {
+        echo "<p>$this->nom est KO et ne peut plus attaquer.</p>";
+        return;
     }
 
-    public function attaquer($cible) {
-        if ($this->vie <= 0) {
-            echo "<p>$this->nom est KO et ne peut plus attaquer.</p>";
-            return;
-        }
-
-        // 🎲 Chance de nécromancie (1 sur 5)
-        if (rand(1, 5) === 1) {
-            $this->invoquerNecromancie($cible);
-            return;
-        }
-
-        // ✨ Sinon, attaque classique avec possibilité de coup critique
-        $forceAttaque = $this->getForce();
-        if (rand(0, 1) === 1) {
-            $forceAttaque *= 2;
-            echo "<p style='color:blue;'>✨ Coup critique magique ! Force doublée à $forceAttaque</p>";
-        } else {
-            echo "<p>🔮 Attaque normale avec force de $forceAttaque</p>";
-        }
-
-        $cible->subirDegats($forceAttaque);
+    // 🧪 Potion contre Guerrier, activée aléatoirement
+    if (!$this->potionUtilisee && $cible instanceof guerrier && rand(1, 4) === 1) {
+        $this->vie += 100;
+        $this->potionUtilisee = true;
+        echo "<p style='color:green;'>🧪 $this->nom boit une potion magique et récupère 100 PV ! Il a maintenant {$this->vie} PV.</p>";
     }
+
+    // 🎲 Chance de nécromancie
+    if (rand(1, 5) === 1) {
+        $this->invoquerNecromancie($cible);
+        return;
+    }
+
+    // ✨ Attaque classique avec 50% de critique
+    $forceAttaque = $this->getForce();
+    if (rand(0, 1) === 1) {
+        $forceAttaque *= 2;
+        echo "<p style='color:blue;'>✨ Coup critique magique ! Force doublée à $forceAttaque</p>";
+    } else {
+        echo "<p>🔮 Attaque normale avec force de $forceAttaque</p>";
+    }
+
+    $cible->subirDegats($forceAttaque);
+}
+private function invoquerNecromancie($cible) {
+    $degatsNecro = rand(10, 30); // Tu peux ajuster les dégâts ici
+    echo "<p style='color:purple;'>💀 $this->nom invoque les esprits des ténèbres et inflige $degatsNecro dégâts à {$cible->getNom()} !</p>";
+    $cible->subirDegats($degatsNecro);
+}
+
+    
 }
 
 
