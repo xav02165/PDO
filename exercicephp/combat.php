@@ -22,6 +22,17 @@
   font-size: 12px;
 }
 </style>
+<style>
+.fantome {
+  animation: apparition 1s ease-out;
+  color: #7f00ff;
+  font-weight: bold;
+}
+@keyframes apparition {
+  0% { opacity: 0; transform: translateY(-20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+</style>
 
 </head>
 <body>
@@ -169,21 +180,43 @@ class voleur extends personnage {
 }
 
 class magicien extends personnage {
-    
-    public function attaquer($cible) {
-        $forceAttaque = $this->getForce();
+    private function invoquerNecromancie($cible) {
+        echo "<p style='color:purple; font-weight:bold;'>🕯️ Le magicien invoque une aura de NÉCROMANCIE... un fantôme surgit ! 👻</p>";
+        for ($i = 1; $i <= 5; $i++) {
+            echo "<p class='fantome'>👻 Attaque fantôme #$i : 5 dégâts</p>";
+            $cible->subirDegats(5);
+        }
+    }
 
-        // 50% de chance de doubler la force
+    public function attaquer($cible) {
+        if ($this->vie <= 0) {
+            echo "<p>$this->nom est KO et ne peut plus attaquer.</p>";
+            return;
+        }
+
+        // 🎲 Chance de nécromancie (1 sur 5)
+        if (rand(1, 5) === 1) {
+            $this->invoquerNecromancie($cible);
+            return;
+        }
+
+        // ✨ Sinon, attaque classique avec possibilité de coup critique
+        $forceAttaque = $this->getForce();
         if (rand(0, 1) === 1) {
             $forceAttaque *= 2;
-            echo " Coup critique magique ! Force doublée à $forceAttaque<br>";
+            echo "<p style='color:blue;'>✨ Coup critique magique ! Force doublée à $forceAttaque</p>";
         } else {
-            echo " Attaque normale avec force de $forceAttaque<br>";
+            echo "<p>🔮 Attaque normale avec force de $forceAttaque</p>";
         }
 
         $cible->subirDegats($forceAttaque);
     }
 }
+
+
+
+
+
 
 
 
