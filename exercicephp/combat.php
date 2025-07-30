@@ -193,7 +193,7 @@ if (isset($_POST['combat']) && isset($_SESSION['personnage'])) {
             $personnageChoisi = new magicien("Magicien", 90, 8);
             break;
 case 'sangoku':
-    $personnageChoisi = new sangoku("Sangoku", 100, 20);
+    $personnageChoisi = new sangoku("Sangoku", 120, 25);
     break;
 
     
