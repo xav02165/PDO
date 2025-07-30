@@ -79,7 +79,7 @@ class personnage {
             echo "<p>" . $this->nom . " est toujours en vie avec " . $this->vie . " points de vie restants.</p>";
     }
     }
-    //Classes filles
+    //Classes filles/enfants
     class guerrier extends personnage {
         public function __construct($nom, $vie, $force) {
             $this->nom = $nom;
